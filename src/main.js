@@ -10,3 +10,6 @@ new Vue({
 Vue.filter('to-UpperCase',(value)=>{
   return value.toUpperCase();
 })
+Vue.filter('format',(value)=>{
+  return value-500;
+})
