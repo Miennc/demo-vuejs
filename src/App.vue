@@ -8,13 +8,17 @@ export  default {
        Tasks: [
           
        ],
+       active:false
     }
   },
   methods: {
     addTasks:function(){
       this.Tasks.push({todo:this.newTasks, done:false})
       this.newTasks ='';
-    }
+    },
+        Change(index, e) {
+            return this.Tasks[index].todo = e.target.value    
+        }
   }
 }
 </script>
@@ -28,7 +32,10 @@ export  default {
             <input type="checkbox" v-model="task.done">
           </span>
           <span :class="{done:task.done}">{{task.todo}}</span>
+
+           <input v-show="active" type="text" v-on:change="e => Change(index, e)"> <button @click="active = !active">Sua</button>
           </div>
+
      </div>
     
 </template>
