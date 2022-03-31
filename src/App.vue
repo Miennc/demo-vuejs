@@ -1,28 +1,35 @@
-<template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
-</template>
-
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
-export default {
+export  default {
   name: 'App',
-  components: {
-    HelloWorld
-  }
+  data() {
+    return {
+      number: 1,
+      message:"hello",
+      users: {
+        name:'mien',
+        age:20
+      }
+    }
+  },
+  methods: {
+    Increment(){
+      return this.number++;
+    }
+  },
 }
 </script>
 
+<template>
+  <div id="app">
+    {{name}}
+    <div>{{message | to-UpperCase}}</div>
+    <button @click="Increment">button</button>
+  </div>
+
+</template>
+
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
 }
 </style>
