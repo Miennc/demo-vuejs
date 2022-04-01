@@ -66,7 +66,7 @@ export default {
         </div>
         <div>
           <div v-if="maxPrice == item.price">max</div>
-        <div v-if="minPrice == item.price">min</div>
+          <div v-if="minPrice == item.price">min</div>
           <p>{{ item.price }}</p>
           <p>{{ item.publicDate }}</p>
           <p> max product {{ maxPrice }}</p>
@@ -77,6 +77,7 @@ export default {
         </div>
       </div>
     </div>
+
   </div>
 </template>
 <style>
