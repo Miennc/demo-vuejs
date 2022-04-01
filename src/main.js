@@ -7,6 +7,3 @@ new Vue({
   render: h => h(App),
 }).$mount('#app')
 
-Vue.filter('to-UpperCase',(value)=>{
-  return value.toUpperCase();
-})
