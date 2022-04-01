@@ -1,89 +1,138 @@
-<script>
-export default {
-  name: "App",
-
-  data() {
-    return {
-      formula: '',
-      result: null,
-    }
-  },
-  methods: {
-    getNumber(value) {
-      this.formula = value;
-    },
-  }
-}
-</script>
-
-
 <template>
   <div id="app">
-    <div class="calc-body">
-      <div class="calculator-display">
-        <div class="calculator-formula" v-cloak>{{ formula }}</div>
-        <div class="calculator-result" v-cloak>{{ result }}</div>
+    <div class="wrapper">
+      <div class="display">
+        {{ display }}
       </div>
-      <div/>
-      <div class="calc-inputs">
-        <button class="btn_square alt" aria-label="Clear" @click="clearAll">CE</button>
-        <button class="btn_square" aria-label="Zero" @click="getNumber(0)">0</button>
-        <button class="btn_square" aria-label="One" @click="getNumber(1)">1</button>
-        <button class="btn_square" aria-label="Two" @click="getNumber(2)">2</button>
-        <button class="btn_square" aria-label="Three" @click="getNumber(3)">3</button>
-        <button class="btn_square" aria-label="Four" @click="getNumber(4)">4</button>
-        <button class="btn_square" aria-label="Five" @click="getNumber(5)">5</button>
-        <button class="btn_square" aria-label="Six" @click="getNumber(6)">6</button>
-        <button class="btn_square" aria-label="Seven" @click="getNumber(7)">7</button>
-        <button class="btn_square" aria-label="Eight" @click="getNumber(8)">8</button>
-        <button class="btn_square" aria-label="Nine" @click="getNumber(9)">9</button>
-        <button class="btn_square alt" aria-label="add" @click="add('+')">+</button>
-        <button class="btn_square alt" aria-label="subtract" @click="subtract('-')">-</button>
-        <button class="btn_square alt" aria-label="multiply" @click="multiply('x')">*</button>
-        <button class="btn_square alt" aria-label="division" @click="division('%')">%</button>
-        <button class="btn_square alt" aria-label="equals" @click="equals()">=</button>
+      <div class="wrapper-number">
+        <div class="row-1">
+          <button @click='append(7)' class="number number-7">7</button>
+          <button @click='append(8)' class="number number-8">8</button>
+          <button @click='append(9)' class="number number-9">9</button>
+          <button @click='divide' class="number number-div">/</button>
+        </div>
+        <div class="row-2">
+          <button @click='append(4)' class="number number-4">4</button>
+          <button @click='append(5)' class="number number-5">5</button>
+          <button @click='append(6)' class="number number-6">6</button>
+          <button @click='multiply' class="number number-mul">*</button>
+        </div>
+        <div class="row-3">
+          <button @click='append(1)' class="number number-1">1</button>
+          <button @click='append(2)' class="number number-2">2</button>
+          <button @click='append(3)' class="number number-3">3</button>
+          <button @click='add' class="number number-add">+</button>
+        </div>
+        <div class="row-4">
+          <button @click='append(0)' class="number number-0">0</button>
+          <button @click='clear' class="number number-clear">Clear</button>
+          <button @click='equal' class="number number-equal">=</button>
+          <button @click='subtract' class="number number-sub">-</button>
+        </div>
+
       </div>
+
     </div>
   </div>
 </template>
 
+<script>
+
+
+export default {
+  name: 'App',
+  data() {
+    return {
+      previous: null,
+      display: 0,
+      operator: null,
+      operatorClicked: false
+    };
+  },
+  methods: {
+    clear() {
+      this.display = 0;
+    },
+
+    append(number) {
+      if (this.operatorClicked === true) {
+        this.display = '';
+        this.operatorClicked = false;
+      }
+      this.display =
+          this.display === 0
+              ? (this.display = number)
+              : '' + this.display + number;
+    },
+    divide() {
+      this.operator = (a, b) => a / b;
+      this.previous = this.display;
+      this.operatorClicked = true;
+    },
+    multiply() {
+      this.operator = (a, b) => a * b;
+      this.previous = this.display;
+      this.operatorClicked = true;
+    },
+    subtract() {
+      this.operator = (a, b) => a - b;
+      this.previous = this.display;
+      this.operatorClicked = true;
+    },
+    add() {
+      this.operator = (a, b) => a + b;
+      this.previous = this.display;
+      this.operatorClicked = true;
+    },
+    equal() {
+      this.display = this.operator(Number(this.previous), Number(this.display));
+      this.previous = null;
+      this.operatorClicked = true;
+    }
+  }
+
+}
+</script>
+
 <style>
-#App {
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   text-align: center;
+  color: #2c3e50;
+  margin-top: 60px;
 }
 
-.calc-body {
-  width: 500px;
-  height: 500px;
-  background: rgb(184, 184, 188);
-  margin: 0 auto;
+.wrapper {
   display: flex;
-  flex-wrap: wrap;
-  align-content: start;
-}
-
-.calculator-display {
-  width: 500px;
-  background: pink;
-  height: 40px;
-  display: flex;
+flex-direction: column;
   justify-content: center;
   align-items: center;
+
 }
 
-.btn_square {
-  margin: 10px 10px 10px 10px;
-  width: 100px;
-  height: 50px;
-  background: rgb(221, 96, 232);
+.wrapper .wrapper-number {
+  display: flex;
+  flex-direction: column;
 }
 
 .display {
-  background: #ddd;
+  width: 400px;
+  height: 45px;
+  margin-bottom: 25px;
   border: 1px solid #111;
-  margin: 0 auto;
-  width: 500px;
-  height: 50px;
+  font-size: 2.5rem;
   cursor: default;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 1rem;
 }
+
+.number {
+  width: 70px;
+  height: 50px;
+  margin: 15px;
+}
+
 </style>
