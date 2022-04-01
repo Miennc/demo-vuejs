@@ -1,87 +1,122 @@
 <script>
-export default {
-  name: "App",
 
+
+export default {
+  name: 'App',
   data() {
     return {
-      cart: [],
-      products: [
-        {
-          id: 1,
-          name: "PS5",
-          price: 5555,
-          publicDate: "05-05-2021",
-          image:
-              "https://cdn.vjshop.vn/hightech/may-choi-game/ps5/sony-ps-5-1.jpg",
-          hot: true,
-        },
-        {
-          id: 2,
-          name: "PS4",
-          price: 4444,
-          publicDate: "04-04-2021",
-          image:
-              "https://gmedia.playstation.com/is/image/SIEPDC/ps4-slim-image-block-01-en-24jul20?$native--t$",
-          hot: true,
-        },
-        {
-          id: 3,
-          name: "PS3",
-          price: 3333,
-          publicDate: "03-03-2021",
-          image:
-              "https://game.haloshop.vn/image/catalog/blogs/ps3-co-con-dang-mua/ps3-co-con-dang-mua-21.jpg",
-          hot: false,
-        },
-      ],
-      paymentMethods: [
-        {text: "COD", value: 1},
-        {text: "Banking", value: 2},
-        {text: "Ứng dụng bên thứ 3", value: 3},
-      ],
-      selectedPayment: 2,
+      previous: null,
+      display: 0,
+      operator: null,
+      operatorClicked: false
     };
   },
-  computed: {
-    hotProducts() {
-      return this.products.filter(product => product.hot);
-    },
-    maxPrice() {
-      return Math.max(...this.products.map(product => product.price));
-    },
-    minPrice() {
-      return Math.min(...this.products.map(product => product.price));
+  methods: {
+    clear() {
+      this.display = 0;
     },
 
-  },
-};
+    append(number) {
+      if (this.operatorClicked) {
+        this.display = '';
+        this.operatorClicked = false;
+      }
+      this.display = this.display === 0 ? (this.display = number) : '' + this.display + number;
+    },
+    divide() {
+      this.operator = (a, b) => a / b;
+      this.previous = this.display;
+      this.operatorClicked = true;
+    },
+    multiply() {
+      this.operator = (a, b) => a * b;
+      this.previous = this.display;
+      this.operatorClicked = true;
+    },
+    subtract() {
+      this.operator = (a, b) => a - b;
+      this.previous = this.display;
+      this.operatorClicked = true;
+    },
+    add() {
+      this.operator = (a, b) => a + b;
+      this.previous = this.display;
+      this.operatorClicked = true;
+    },
+    equal() {
+      this.display = this.operator(Number(this.previous), Number(this.display));
+      this.previous = null;
+      this.operatorClicked = true;
+    }
+  }
+
+}
 </script>
 
 <template>
   <div id="app">
-    <div v-for="(item, index) in products" :key="index">
-      <div :id=item.id>
-        <div class="">
-          <img :src=item.image alt="">
-        </div>
-        <div>
-          <div v-if="maxPrice == item.price">max</div>
-          <div v-if="minPrice == item.price">min</div>
-          <p>{{ item.price }}</p>
-          <p>{{ item.publicDate }}</p>
-          <p> max product {{ maxPrice }}</p>
-          <p> min product {{ minPrice }}</p>
-          <p v-for="(hot, index) in hotProducts" :key="index">
-            {{ hot.name }}
-          </p>
-        </div>
+    <div class="calc-body">
+      <div class="display">
+        {{ display }}
       </div>
+      <div/>
+      <button @click='append(7)' class="number number-7">7</button>
+      <button @click='append(8)' class="number number-8">8</button>
+      <button @click='append(9)' class="number number-9">9</button>
+      <button @click='divide' class="number number-div">/</button>
+      <button @click='append(4)' class="number number-4">4</button>
+      <button @click='append(5)' class="number number-5">5</button>
+      <button @click='append(6)' class="number number-6">6</button>
+      <button @click='multiply' class="number number-mul">*</button>
+      <button @click='append(1)' class="number number-1">1</button>
+      <button @click='append(2)' class="number number-2">2</button>
+      <button @click='append(3)' class="number number-3">3</button>
+      <button @click='add' class="number number-add">+</button>
+      <button @click='append(0)' class="number number-0">0</button>
+      <button @click='clear' class="number number-clear">Clear</button>
+      <button @click='equal' class="number number-equal">=</button>
+      <button @click='subtract' class="number number-sub">-</button>
     </div>
-
   </div>
 </template>
+
 <style>
-#app {
+#App {
   text-align: center;
+}
+
+.calc-body {
+  width: 500px;
+  height: 500px;
+  background: rgb(184, 184, 188);
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: start;
+}
+
+.display {
+  width: 500px;
+  background: pink;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.number {
+  margin: 10px 10px 10px 10px;
+  width: 100px;
+  height: 50px;
+  background: rgb(221, 96, 232);
+}
+
+.display {
+  background: #ddd;
+  border: 1px solid #111;
+  margin: 0 auto;
+  width: 500px;
+  height: 50px;
+  cursor: default;
 }
 </style>
