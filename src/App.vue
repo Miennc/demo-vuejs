@@ -65,7 +65,12 @@ export default {
           <img :src=item.image alt="">
         </div>
         <div>
-          <h1>{{item.name}}</h1>
+          <div v-if="maxPrice>=5555">
+             <h1> max {{item.name}}</h1>
+          </div>
+          <div v-if="minPrice<=3333">
+            <h1> min {{item.name}}</h1>
+          </div>
           <p>{{item.price}}</p>
           <p>{{item.publicDate}}</p>
           <p> max product {{maxPrice}}</p>
