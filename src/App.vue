@@ -65,18 +65,14 @@ export default {
           <img :src=item.image alt="">
         </div>
         <div>
-          <div v-if="maxPrice>=5555">
-             <h1> max {{item.name}}</h1>
-          </div>
-          <div v-if="minPrice<=3333">
-            <h1> min {{item.name}}</h1>
-          </div>
-          <p>{{item.price}}</p>
-          <p>{{item.publicDate}}</p>
-          <p> max product {{maxPrice}}</p>
-          <p> min product {{minPrice}}</p>
+          <div v-if="maxPrice == item.price">max</div>
+        <div v-if="minPrice == item.price">min</div>
+          <p>{{ item.price }}</p>
+          <p>{{ item.publicDate }}</p>
+          <p> max product {{ maxPrice }}</p>
+          <p> min product {{ minPrice }}</p>
           <p v-for="(hot, index) in hotProducts" :key="index">
-            {{hot.name}}
+            {{ hot.name }}
           </p>
         </div>
       </div>
