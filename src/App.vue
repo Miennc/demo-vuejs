@@ -16,7 +16,7 @@ export default {
           quantity: 0,
           description: 'mô văn tả',
           img: 'https://i.pinimg.com/564x/27/37/20/27372020ca6311452c34c901aae34372.jpg',
-          badge: 'bán chạy',
+          badge: true,
           color: ['red', 'blue', 'yellow', 'pink']
 
         },
@@ -29,7 +29,7 @@ export default {
           branch: 'GC',
           quantity: 0,
           description: 'mô văn tả',
-          badge: 'không bán chạy',
+          badge: false,
           img: 'https://i.pinimg.com/564x/5a/1e/dd/5a1edd052c6ce4424bed1099526309e9.jpg',
           color: ['red', 'blue', 'yellow', 'pink']
 
@@ -75,7 +75,8 @@ export default {
           <div>{{ item.description }}</div>
           <div>{{ item.releaseDate  |formatDate }}</div>
           <div>{{ item.price | formatCurrency }}</div>
-          <div>{{ item.badge }}</div>
+       <div v-if="item.badge == true">San pham ban chay</div>
+        <div v-else>San pham ban khong chay</div>
           <div v-for="(color, index) in item.color" :key="index">
             <button :class="color"> {{ color }}</button>
           </div>
