@@ -3,103 +3,109 @@ export default {
   name: 'App',
   data() {
     return {
-      carts: [],
-      total: 0,
-      products: [
-        {
-          id: 1,
-          name: 'product1',
-          price: 200,
-          releaseDate: '08-01-2021',
-          sellingProducts: true,
-          branch: 'LV',
-          quantity: 0,
-          description: 'mô văn tả',
-          img: 'https://i.pinimg.com/564x/27/37/20/27372020ca6311452c34c901aae34372.jpg',
-          badge: true,
-          color: ['red', 'blue', 'yellow', 'pink']
-
-        },
-        {
-          id: 2,
-          name: 'product2',
-          price: 200,
-          releaseDate: '08-01-2021',
-          sellingProducts: true,
-          branch: 'GC',
-          quantity: 0,
-          description: 'mô văn tả',
-          badge: false,
-          img: 'https://i.pinimg.com/564x/5a/1e/dd/5a1edd052c6ce4424bed1099526309e9.jpg',
-          color: ['red', 'blue', 'yellow', 'pink']
-
-        },
-
-      ]
+      listData: [],
+      post: {
+        title: '',
+        content: ''
+      },
+      update: {
+        title: '',
+        content:''
+      },
     }
   },
-  computed: {
-    // isDisabled() {
-    //   return this.products.length === 0;
-    // }
+  mounted() {
+    this.getData();
   },
   methods: {
-    addToCart(id) {
-      if (this.carts.find(product => product.id === id)) {
-         this.carts.find(product => product.id === id).quantity++;
-        localStorage.setItem('listCart', JSON.stringify(this.carts));
-      } else {
-        this.carts.push(this.products.find(product => product.id === id));
-        localStorage.setItem('listCart', JSON.stringify(this.carts));
-        alert('thêm sản phẩm vào giỏ hàng !');
-      }
+    getData() {
+      fetch('http://192.168.1.38/note_cy/mien/listNote.php').then((res) => res.json()).then((data) => {
+        this.listData = data;
+      })
     },
-    showCart() {
-      if (localStorage.getItem('listCart')) {
-        this.carts = JSON.parse(localStorage.getItem('listCart'));
+
+    async addNote() {
+      const formData = new FormData();
+      for (const key in this.post) {
+        formData.append(key, this.post[key]);
       }
+      const request = new Request(
+          "http://192.168.1.38/note_cy/mien/addNote.php",
+          {
+            method: "POST",
+            mode: "cors",
+            cache: "default",
+            body: formData,
+          }
+      );
+      const res = await fetch(request);
+      const {photos} = await res.json();
+      this.data = photos[0];
     },
-    payment(){
-      this.total = this.carts.reduce((total, item) => total + (Number(item.price) *Number(item.quantity)), 0);
-    }
+    async remove(id) {
+      const formData = new FormData();
+      formData.append('id', id);
+      const request = new Request(
+          "http://192.168.1.38/note_cy/mien/deleteNote.php",
+          {
+            method: "POST",
+            mode: "cors",
+            cache: "default",
+            body: formData,
+          }
+      );
+      await fetch(request);
+      this.getData();
+    },
+     async updateNote(id){
+       this.active = true;
+       const formData  = new FormData();
+      formData.append("id", id);
+      for(const key in this.update) {
+        formData.append(key,this.update[key]);
+      }
+
+      const request = new Request(
+        "http://192.168.1.38/note_cy/mien/updateNote.php",
+        {
+          method: "POST",
+          mode: "cors",
+          cache: "default",
+          body: formData,
+        }
+      );
+      await fetch(request);
+      this.getDate();
+     }
   }
 }
 </script>
 
 <template>
   <div id="app">
-    <div class="container">
-      <div class="content">
-        <div v-for="(item, index) in products" :key="index">
-          <div> {{ item.name }}</div>
-          <div>{{ item.description }}</div>
-          <div>{{ item.releaseDate  |formatDate }}</div>
-          <div>{{ item.price | formatCurrency }}</div>
-       <div v-if="item.badge">San pham ban chay</div>
-        <div v-else>San pham ban khong chay</div>
-          <div v-for="(color, index) in item.color" :key="index">
-            <button :class="color"> {{ color }}</button>
-          </div>
-          <button :disabled="isDisabled" @click="addToCart(item.id)">thêm vào giỏ hàng</button>
-          <div><img :src="item.img" alt=""></div>
+    <div>
+      <form action="">
+        <input placeholder="title" v-model="post.title">
+        <input placeholder="content" v-model="post.content">
+        <button @click="addNote()" type="submit">add</button>
+      </form>
+    </div>
+    <div>
 
-        </div>
-      </div>
-      <div class="cart">
-        <button @click="showCart">showCart</button>
-        <div v-for="(item, index) in carts" :key="index">
-          <div> {{ item.name }}</div>
-          <div> số lượng {{ item.quantity }}</div>
-          <div> giá {{ item.price }}</div>
-        </div>
-      </div>
-      <div>
-           <button @click="payment()">payment</button>
-        <div> tổng tiền {{total}}</div>
+    </div>
+
+    <div v-for="(item, index) in listData.flat()" :key="index">
+      <div>{{ item.title }}
+        {{ item.content }}
+        <span> <button @click="remove(item.id)">Delete</button></span>
+          <form action="" >
+        <input placeholder=" update title" v-model="update.title">
+        <input placeholder=" update content" v-model="update.content">
+        <button @click="updateNote(item.id)" type="submit">update</button>
+      </form>
       </div>
     </div>
   </div>
-
 </template>
 
 <style>
@@ -107,23 +113,4 @@ export default {
   text-align: center;
 }
 
-.red {
-  background: red;
-}
-
-.blue {
-  background: blue;
-}
-
-.yellow {
-  background: yellow;
-}
-
-.pink {
-  background: pink;
-}
-
-.container {
-  display: flex;
-}
 </style>
