@@ -49,7 +49,7 @@ export default {
         this.carts.find(product => product.id === id).quantity++;
         localStorage.setItem('listCart', JSON.stringify(this.carts));
       } else {
-        this.carts.push(this.products.flat().find(product => product.id === id));
+        this.carts.push(this.products.find(product => product.id === id));
         localStorage.setItem('listCart', JSON.stringify(this.carts));
         alert('thêm sản phẩm vào giỏ hàng !');
       }
