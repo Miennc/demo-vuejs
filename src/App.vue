@@ -46,7 +46,7 @@ export default {
   methods: {
     addToCart(id) {
       if (this.carts.find(product => product.id === id)) {
-        this.carts.find(product => product.id === id).quantity++;
+         this.carts.find(product => product.id === id).quantity++;
         localStorage.setItem('listCart', JSON.stringify(this.carts));
       } else {
         this.carts.push(this.products.find(product => product.id === id));
@@ -75,7 +75,7 @@ export default {
           <div>{{ item.description }}</div>
           <div>{{ item.releaseDate  |formatDate }}</div>
           <div>{{ item.price | formatCurrency }}</div>
-       <div v-if="item.badge == true">San pham ban chay</div>
+       <div v-if="item.badge">San pham ban chay</div>
         <div v-else>San pham ban khong chay</div>
           <div v-for="(color, index) in item.color" :key="index">
             <button :class="color"> {{ color }}</button>
