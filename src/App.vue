@@ -3,90 +3,100 @@ export default {
   name: 'App',
   data() {
     return {
-      products: [],
       carts: [],
-      search: '',
-      active: false,
       total: 0,
+      products: [
+        {
+          id: 1,
+          name: 'product1',
+          price: 200,
+          releaseDate: '08-01-2021',
+          sellingProducts: true,
+          branch: 'LV',
+          quantity: 0,
+          description: 'mô văn tả',
+          img: 'https://i.pinimg.com/564x/27/37/20/27372020ca6311452c34c901aae34372.jpg',
+          badge: 'bán chạy',
+          color: ['red', 'blue', 'yellow', 'pink']
+
+        },
+        {
+          id: 2,
+          name: 'product2',
+          price: 200,
+          releaseDate: '08-01-2021',
+          sellingProducts: true,
+          branch: 'GC',
+          quantity: 0,
+          description: 'mô văn tả',
+          badge: 'không bán chạy',
+          img: 'https://i.pinimg.com/564x/5a/1e/dd/5a1edd052c6ce4424bed1099526309e9.jpg',
+          color: ['red', 'blue', 'yellow', 'pink']
+
+        },
+
+      ]
+    }
+  },
+  computed: {
+    isDisabled() {
+      return this.products.length === 0;
     }
   },
   methods: {
-    getData() {
-      fetch(`https://6246a3c3e3450d61b000fdf0.mockapi.io/products?search=${this.search}`).then(response => response.json()).then((data) => {
-        this.products.push(data)
-      })
-      this.products.splice(0, 1)
-    },
-    onSubmit() {
-      this.getData();
-      this.search = '';
-    },
     addToCart(id) {
       if (this.carts.find(product => product.id === id)) {
-        alert('sản phẩm đã có trong giỏ hàng  !');
+        this.carts.find(product => product.id === id).quantity++;
+        localStorage.setItem('listCart', JSON.stringify(this.carts));
       } else {
         this.carts.push(this.products.flat().find(product => product.id === id));
         localStorage.setItem('listCart', JSON.stringify(this.carts));
         alert('thêm sản phẩm vào giỏ hàng !');
       }
-
     },
     showCart() {
-      this.active = !this.active;
-      this.products = [];
       if (localStorage.getItem('listCart')) {
         this.carts = JSON.parse(localStorage.getItem('listCart'));
       }
     },
-    removeItemCart(id) {
-      this.carts.splice(this.carts.find(item => item.id === id), 1);
-      localStorage.setItem('listCart', JSON.stringify(this.carts));
-      alert('xóa sản phẩm khỏi giỏ hàng !');
-    },
-    payment() {
-      this.total = this.carts.reduce((total, item) => total + Number(item.price), 0);
-    },
-
-  },
-  mounted() {
-    this.getData();
-  },
+    payment(){
+      this.total = this.carts.reduce((total, item) => total + (Number(item.price) *Number(item.quantity)), 0);
+    }
+  }
 }
 </script>
 
 <template>
   <div id="app">
-    <div class="menu">
-      <div>
-        <form action="" @submit.prevent="onSubmit()">
-          <input type="text" v-model="search" placeholder="Search" class="search">
-        </form>
-      </div>
-      <div class="cart" @click="showCart()">cart</div>
-      <div class="cart" v-show="active" @click="payment()">payment</div>
-    </div>
-    <div v-show="active"> tổng tiền hàng: {{ total }}</div>
-    <div v-show="active"> thuế là : {{ total * 0.08 }}</div>
-    <div v-show="active"> tổng tiền hóa đơn : {{ total + (total * 0.08) }}</div>
-    <div v-for="(cart, index) in carts" :key="index" v-show="active" class="listCart">
-      <div><img :src="cart.thumb" alt=""></div>
-      <div> {{ cart.name }}</div>
-      <div class="colorPrice">::{{ cart.price }}</div>
-      <div>
-        <button @click="removeItemCart(cart.id)">xóa khỏi giỏ hàng</button>
-      </div>
-    </div>
+    <div class="container">
+      <div class="content">
+        <div v-for="(item, index) in products" :key="index">
+          <div> {{ item.name }}</div>
+          <div>{{ item.description }}</div>
+          <div>{{ item.releaseDate  |formatDate }}</div>
+          <div>{{ item.price | formatCurrency }}</div>
+          <div>{{ item.badge }}</div>
+          <div v-for="(color, index) in item.color" :key="index">
+            <button :class="color"> {{ color }}</button>
+          </div>
+          <button :disabled="isDisabled" @click="addToCart(item.id)">thêm vào giỏ hàng</button>
+          <div><img :src="item.img" alt=""></div>
 
-    <ul v-for="(item, index) in products.flat()" :key="index">
-      <div> Name :{{ item.name }}</div>
-      <div> Price :{{ item.price }}</div>
-      <div> Description :{{ item.description }}</div>
-      <div>
-        <button @click="addToCart(item.id)">add to cart</button>
+        </div>
       </div>
-      <img :src="item.thumb" alt="">
-    </ul>
-
+      <div class="cart">
+        <button @click="showCart">showCart</button>
+        <div v-for="(item, index) in carts" :key="index">
+          <div> {{ item.name }}</div>
+          <div> số lượng {{ item.quantity }}</div>
+          <div> giá {{ item.price }}</div>
+        </div>
+      </div>
+      <div>
+           <button @click="payment()">payment</button>
+        <div> tổng tiền {{total}}</div>
+      </div>
+    </div>
   </div>
 
 </template>
@@ -96,43 +106,23 @@ export default {
   text-align: center;
 }
 
-.search {
-  width: 500px;
-  height: 30px;
-  border-radius: 10px;
-}
-
-.menu {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.cart {
-  width: 100px;
-  height: 36px;
+.red {
   background: red;
-  border-radius: 10px;
+}
+
+.blue {
+  background: blue;
+}
+
+.yellow {
+  background: yellow;
+}
+
+.pink {
+  background: pink;
+}
+
+.container {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 23px;
-  cursor: pointer;
-}
-
-.listCart {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.listCart img {
-  width: 200px;
-  height: 200px;
-}
-
-.listCart .colorPrice {
-  color: red;
 }
 </style>
