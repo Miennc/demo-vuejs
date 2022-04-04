@@ -44,7 +44,7 @@ export default {
       alert('xóa sản phẩm khỏi giỏ hàng !');
     },
     payment() {
-      this.total = this.carts.reduce((total, item) => total + item.price, 0);
+      this.total = this.carts.reduce((total, item) => total + Number(item.price), 0);
     },
 
   },
@@ -56,7 +56,6 @@ export default {
 
 <template>
   <div id="app">
-    {{ carts }}
     <div class="menu">
       <div>
         <form action="" @submit.prevent="onSubmit()">
