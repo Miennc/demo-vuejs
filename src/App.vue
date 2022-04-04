@@ -9,30 +9,35 @@ export default {
       active: false,
       total: 0,
     }
+
   },
   methods: {
+
     getData() {
       fetch(`https://6246a3c3e3450d61b000fdf0.mockapi.io/products?search=${this.search}`).then(response => response.json()).then((data) => {
         this.products = data;
       })
       this.products.splice(0, 1)
     },
+
     onSubmit() {
       this.getData();
       this.search = '';
     },
+
     addToCart(id) {
       if (this.carts.find(product => product.id === id)) {
         alert('sản phẩm đã có trong giỏ hàng  !');
       } else {
         this.carts.push(this.products.flat().find(product => product.id === id));
-        this.carts.map((item)=>{
-          item.quantity =1;
+        this.carts.map((item) => {
+          item.quantity = 1;
         })
         localStorage.setItem('listCart', JSON.stringify(this.carts));
         alert('thêm sản phẩm vào giỏ hàng !');
-      }      
+      }
     },
+
     showCart() {
       this.active = !this.active;
       this.products = [];
@@ -40,45 +45,52 @@ export default {
         this.carts = JSON.parse(localStorage.getItem('listCart'));
       }
     },
+
     removeItemCart(id) {
       this.carts.splice(this.carts.find(item => item.id === id), 1);
       localStorage.setItem('listCart', JSON.stringify(this.carts));
       alert('xóa sản phẩm khỏi giỏ hàng !');
     },
-    payment() {
+
+    paymentCart() {
       this.total = this.carts.reduce((total, item) => total + Number(item.price), 0);
     },
-    updateQuantity(cartItemIndex,quantityUnit) {
+
+    updateQuantity(cartItemIndex, quantityUnit) {
       if (this.carts[cartItemIndex].quantity + quantityUnit <= 0) {
         this.removeItemCart(this.carts[cartItemIndex].id);
       } else {
         this.carts[cartItemIndex].quantity += quantityUnit;
         localStorage.setItem('listCart', JSON.stringify(this.carts));
       }
-
     }
-
   },
+
   mounted() {
     this.getData();
   },
+
 }
 </script>
 
 <template>
   <div id="app">
+
     <div class="menu">
+
       <div>
         <form action="" @submit.prevent="onSubmit()">
           <input type="text" v-model="search" placeholder="Search" class="search">
         </form>
       </div>
       <div class="cart" @click="showCart()">cart</div>
-      <div class="cart" v-show="active" @click="payment()">payment</div>
+      <div class="cart" v-show="active" @click="paymentCart()">payment</div>
     </div>
     <div v-show="active"> tổng tiền hàng: {{ total }}</div>
     <div v-show="active"> thuế là : {{ total * 0.08 }}</div>
     <div v-show="active"> tổng tiền hóa đơn : {{ total + (total * 0.08) }}</div>
+
+
     <div v-for="(cartItem, cartItemIndex) in carts" :key="cartItemIndex" v-show="active" class="listCart">
       <div><img :src="cartItem.thumb" alt=""></div>
       <div> {{ cartItem.name }}</div>
@@ -86,11 +98,11 @@ export default {
       <div>
         <button @click="removeItemCart(cartItemIndex)">xóa khỏi giỏ hàng</button>
       </div>
-        <div>
-          <button @click="updateQuantity(cartItemIndex,-1)">-</button>
-          <span> {{cartItem.quantity}} </span>
-          <button @click="updateQuantity(cartItemIndex,1)">+</button>
-        </div>
+      <div>
+        <button @click="updateQuantity(cartItemIndex,-1)">-</button>
+        <span> {{ cartItem.quantity }} </span>
+        <button @click="updateQuantity(cartItemIndex,1)">+</button>
+      </div>
     </div>
 
     <div v-for="(productItem, productItemIndex) in products.flat()" :key="productItemIndex">
@@ -102,6 +114,7 @@ export default {
       </div>
       <img :src="productItem.thumb" alt="">
     </div>
+
   </div>
 </template>
 
