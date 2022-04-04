@@ -17,7 +17,6 @@ export default {
       fetch(`https://6246a3c3e3450d61b000fdf0.mockapi.io/products?search=${this.search}`).then(response => response.json()).then((data) => {
         this.products = data;
       })
-      this.products.splice(0, 1)
     },
 
     onSubmit() {
