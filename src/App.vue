@@ -13,7 +13,7 @@ export default {
   methods: {
     getData() {
       fetch(`https://6246a3c3e3450d61b000fdf0.mockapi.io/products?search=${this.search}`).then(response => response.json()).then((data) => {
-        this.products.push(data)
+        this.products = data;
       })
       this.products.splice(0, 1)
     },
@@ -26,10 +26,12 @@ export default {
         alert('sản phẩm đã có trong giỏ hàng  !');
       } else {
         this.carts.push(this.products.flat().find(product => product.id === id));
+        this.carts.map((item)=>{
+          item.quantity =1;
+        })
         localStorage.setItem('listCart', JSON.stringify(this.carts));
         alert('thêm sản phẩm vào giỏ hàng !');
-      }
-
+      }      
     },
     showCart() {
       this.active = !this.active;
@@ -46,6 +48,15 @@ export default {
     payment() {
       this.total = this.carts.reduce((total, item) => total + Number(item.price), 0);
     },
+    updateQuantity(cartItemIndex,quantityUnit) {
+      if (this.carts[cartItemIndex].quantity + quantityUnit <= 0) {
+        this.removeItemCart(this.carts[cartItemIndex].id);
+      } else {
+        this.carts[cartItemIndex].quantity += quantityUnit;
+        localStorage.setItem('listCart', JSON.stringify(this.carts));
+      }
+
+    }
 
   },
   mounted() {
@@ -68,27 +79,30 @@ export default {
     <div v-show="active"> tổng tiền hàng: {{ total }}</div>
     <div v-show="active"> thuế là : {{ total * 0.08 }}</div>
     <div v-show="active"> tổng tiền hóa đơn : {{ total + (total * 0.08) }}</div>
-    <div v-for="(cart, index) in carts" :key="index" v-show="active" class="listCart">
-      <div><img :src="cart.thumb" alt=""></div>
-      <div> {{ cart.name }}</div>
-      <div class="colorPrice">::{{ cart.price }}</div>
+    <div v-for="(cartItem, cartItemIndex) in carts" :key="cartItemIndex" v-show="active" class="listCart">
+      <div><img :src="cartItem.thumb" alt=""></div>
+      <div> {{ cartItem.name }}</div>
+      <div class="colorPrice">::{{ cartItem.price }}</div>
       <div>
-        <button @click="removeItemCart(cart.id)">xóa khỏi giỏ hàng</button>
+        <button @click="removeItemCart(cartItemIndex)">xóa khỏi giỏ hàng</button>
       </div>
+        <div>
+          <button @click="updateQuantity(cartItemIndex,-1)">-</button>
+          <span> {{cartItem.quantity}} </span>
+          <button @click="updateQuantity(cartItemIndex,1)">+</button>
+        </div>
     </div>
 
-    <ul v-for="(item, index) in products.flat()" :key="index">
-      <div> Name :{{ item.name }}</div>
-      <div> Price :{{ item.price }}</div>
-      <div> Description :{{ item.description }}</div>
+    <div v-for="(productItem, productItemIndex) in products.flat()" :key="productItemIndex">
+      <div> Name :{{ productItem.name }}</div>
+      <div> Price :{{ productItem.price }}</div>
+      <div> Description :{{ productItem.description }}</div>
       <div>
-        <button @click="addToCart(item.id)">add to cart</button>
+        <button @click="addToCart(productItem.id)">add to cart</button>
       </div>
-      <img :src="item.thumb" alt="">
-    </ul>
-
+      <img :src="productItem.thumb" alt="">
+    </div>
   </div>
-
 </template>
 
 <style>
