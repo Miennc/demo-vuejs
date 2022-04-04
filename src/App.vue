@@ -39,9 +39,9 @@ export default {
     }
   },
   computed: {
-    isDisabled() {
-      return this.products.length === 0;
-    }
+    // isDisabled() {
+    //   return this.products.length === 0;
+    // }
   },
   methods: {
     addToCart(id) {
